@@ -19,8 +19,7 @@ app.get("/",(req,res)=>{
     module.exports=folderName
     createFolder()
     res.cookie("nithin_pdf",folderName,cookieConfig)
-    let message=""
-    res.render("upload",{message})
+    res.render("upload")
 })
 
 app.post("/download",(req,res)=>{

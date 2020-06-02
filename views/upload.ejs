@@ -1,19 +1,11 @@
 <div class="row mt-5">
     <div class="col-md-5 m-auto">
         <div class="card card-body">
-            <% if(message) { %>
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <%= message %>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <% } %>
             <form action="/upload" method="POST" enctype="multipart/form-data">
-                <h5 id="h5">Select file again and upload</h5>
+                <h5 id="h5">Select images to convert to pdf</h5>
                 <input type="file" multiple name="myImage" onchange="fn2()"/>
-                <br> <button type="submit" class="btn btn-primary m-2" id="btn1" onclick="fn1()" >Upload</button>
-                <button  class="btn btn-primary m-2" disabled id="btn2">Upload</button>
+                <br> <button type="submit" class="btn btn-primary m-2" id="btn1" onclick="fn1()" >Convert</button>
+                <button  class="btn btn-primary m-2" disabled id="btn2">Convert</button>
             </form>
             <script>
                 document.getElementById("btn1").style.visibility="hidden"
@@ -24,7 +16,7 @@
                }
 
                 function fn1(){
-                    document.getElementById("load1").innerHTML="Uploading..."
+                    document.getElementById("load1").innerHTML="Converting..."
                     document.getElementById("load2").className="spinner-border text-primary"
                 }
             </script>
