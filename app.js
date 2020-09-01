@@ -3,12 +3,16 @@ const app = express()
 const expressLayout = require("express-ejs-layouts")
 const multer = require("multer")
 const createFolder = require("./output/makedir")
-const createFolder1 = require("./image/makedir1")
+const {
+    spawn
+} = require("child_process")
 const cookieParser = require("cookie-parser")
 const ImagesToPDF = require('images-pdf');
-const sharp = require("sharp")
-const fs = require("fs")
+
 app.use(cookieParser("its_secret"))
+app.use(express.urlencoded({
+    extended: false
+}))
 
 const cookieConfig = {
     signed: true,
@@ -33,6 +37,8 @@ app.post("/download", (req, res) => {
 })
 
 app.post("/upload", (req, res) => {
+    const resize = req.cookies.resize
+    console.log("rezs", resize)
     const location = req.signedCookies.nithin_pdf
     console.log("location", location)
     module.exports = location
@@ -55,38 +61,19 @@ app.post("/upload", (req, res) => {
             console.log(req.file)
             name = Date.now()
             res.cookie("nithin_name", name, cookieConfig)
-            const findFileName = require("./test.js")
-            folderName = req.signedCookies.nithin_pdf + "100"
-            module.exports = folderName
-            createFolder1()
-            findFileName((err, file_name) => {
-                console.log("filename", file_name)
-                for (i = 0; i < file_name.length; i++) {
-                    fl = `./image/${location}/${file_name[i]}`
-                    console.log(fl)
-                    sharp(fl)
-                        .resize(749, 1000)
-                        .toFile(`${fl}+new.jpg`, (err, info) => {
-                            if (err) {
-                                return console.log("something went wrong", err)
-                            }
-                            console.log("succesfully done", info)
-                        })
-                        .then(()=>{
-                            fs.unlink(`${fl}`, function(err) {
-                                if (err) {
-                                  throw err
-                                } else {
-                                  console.log("Successfully deleted the file.")
-                                }
-                              })
-                        })
-                }
+            if (resize) {
+                const process = spawn("python", ["./resize.py", `${location}`])
+                process.stdout.on("data", () => {
+                    createPdf()
+                })
+            } else {
+                createPdf()
+            }
 
-                    new ImagesToPDF.ImagesToPDF().convertFolderToPDF(`image/${folderName}`, `output/${location}/${name}.pdf`);
-                    res.render("done")
-            })
-
+            function createPdf() {
+                new ImagesToPDF.ImagesToPDF().convertFolderToPDF(`image/${location}`, `output/${location}/${name}.pdf`);
+                res.render("done")
+            }
         }
     })
 })
